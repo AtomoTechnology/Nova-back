@@ -1,0 +1,14 @@
+body {
+  background-color: rgb(245, 245, 245);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+div {
+  width: 200px;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: rgb(235, 35, 0);
+  color: white;
+}
