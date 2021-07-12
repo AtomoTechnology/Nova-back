@@ -1,6 +1,7 @@
 const express = require("express");
 const { check } = require("express-validator");
 const app = express();
+
 const {
   getAllWorks,
   createWork,
@@ -11,7 +12,9 @@ const {
   deleteAll,
   loadFile,
   getWorksByDataAndTurnedinState,
+  uploadImagenWork
 } = require("../controllers/works");
+
 const { fielsValidators } = require("../middlewares/fieldsValidators");
 const { validateJsonWebToken } = require("../middlewares/jwtValidator");
 const { isDate } = require("../helpers/isDate");
@@ -36,11 +39,19 @@ router.post(
   ],
   createWork
 );
+
 router.put("/:id", updateWork);
+
 router.get("/:id", getOneWork);
-router.get("/client/:idClient", getWorksClient);
+
 router.delete("/:id", deleteWork);
+
 router.delete("/", deleteAll);
-router.post("/uploadFileWork", loadFile);
+
+router.post("/uploadFileWork", uploadImagenWork);
+
+router.get("/client/:idClient", getWorksClient);
+
 router.get("/historialWork/all", getWorksByDataAndTurnedinState);
+
 module.exports = router;

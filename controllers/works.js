@@ -6,6 +6,7 @@ const fileUpload = require("express-fileupload");
 const Work_State = require("../models/Work_State");
 const { generateCodigoWork } = require("../helpers/generateCodigoWork");
 const moment = require("moment");
+const { cloudinary } = require("../helpers/cloudinary");
 
 const createWork = async (req, res = response) => {
   // console.log(req.body);
@@ -270,6 +271,48 @@ const loadFile = (req, res = response) => {
   }
 };
 
+
+const uploadImagenWork =async (req, res = response ) =>{
+  try {
+      // console.log(req.body);
+      const r = [];
+      for (let index = 0; index < req.body.length; index++) {   
+    
+      const resp = await cloudinary.uploader.upload(req.body[index],
+        {
+          upload_preset: 'NovaTech'
+        },
+        function (error, result) {
+          if(error){
+            return res.status(500).json({
+              ok : false,
+              msg : 'Error al guardar la imagen!'
+            })
+          }
+          console.log(result);
+
+         let partial = {
+            public_id: result.public_id,
+            format: result.format,
+            size: result.bytes,
+            url: result.url
+          };
+          r.push(partial);
+
+        });
+      }
+
+      res.status(201).json({
+        ok : true ,
+        pathImg : r
+      })
+  } catch (error) {
+    
+  }
+
+
+}
+
 const getWorksByDataAndTurnedinState = async (req, res) => {
   try {
     const works = await Work.find({
@@ -300,4 +343,5 @@ module.exports = {
   deleteAll,
   loadFile,
   getWorksByDataAndTurnedinState,
+  uploadImagenWork,
 };

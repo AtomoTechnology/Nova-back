@@ -12,6 +12,7 @@ const {
   updateClient,
   loadFile,
   deleteAll,
+  uploadImagenCliente
 } = require("../controllers/clients");
 
 const router = express.Router();
@@ -32,7 +33,7 @@ router.post(
   createClient
 );
 
-router.post("/uploadFile", loadFile);
+router.post("/upload", uploadImagenCliente);
 router.put("/:id", validateJsonWebToken, updateClient);
 router.get("/:id", validateJsonWebToken, getOneClient);
 // router.delete("/:id", validateJsonWebToken, deleteWork);
