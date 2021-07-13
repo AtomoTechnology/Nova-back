@@ -2,6 +2,7 @@ const express = require("express");
 
 const fileUpload = require("express-fileupload");
 const { dbConnection } = require("./database/config");
+
 require("dotenv").config();
 const cors = require("cors");
 

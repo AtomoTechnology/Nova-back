@@ -1,6 +1,7 @@
 const express = require("express");
 const { check } = require("express-validator");
 const app = express();
+const bodyParser = require('body-parser');
 
 const { fielsValidators } = require("../middlewares/fieldsValidators");
 const { validateJsonWebToken } = require("../middlewares/jwtValidator");
@@ -33,7 +34,7 @@ router.post(
   createClient
 );
 
-router.post("/upload", uploadImagenCliente);
+router.post("/upload",  uploadImagenCliente);
 router.put("/:id", validateJsonWebToken, updateClient);
 router.get("/:id", validateJsonWebToken, getOneClient);
 // router.delete("/:id", validateJsonWebToken, deleteWork);

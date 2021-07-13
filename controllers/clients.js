@@ -1,12 +1,19 @@
 const express = require("express");
 const { response } = require("express");
+const bodyParser = require('body-parser');
 const app = express();
+app.use(express.json({limit: '150mb'}));
+app.use(express.urlencoded({limit: '150mb', extended: true}));
 const fs = require("fs");
 const Client = require("../models/Clients");
 const fileUpload = require("express-fileupload");
 const { cloudinary } = require("../helpers/cloudinary");
+const { body } = require("express-validator");
 
-app.use(fileUpload());
+
+// app.use(fileUpload({
+//   limits: { fileSize: 50 * 1024 * 1024 },
+// }));
 const createClient = async (req, res = response) => {
   // console.log(req.body);
 
@@ -145,8 +152,6 @@ const updateClient = async (req, res = response) => {
 
 
 const uploadImagenCliente = async (req, res = response) => {
-  console.log('result');
-  console.log(req.body);
   try {
 
     const resp = await cloudinary.uploader.upload(req.body.file,

@@ -302,7 +302,7 @@ router.get("/:id", async (req, res) => {
       .create(html)
       .toFile(
         `${desktopDir}/${
-          order.work.codigo + "-" + Date.now() + "-" + order._id
+          order.work.codigo + "-" + Date.now() + "-" +order.work.cliente.name
         }.pdf`,
         function (err, resp) {
           if (err) {
