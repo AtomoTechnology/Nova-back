@@ -1,57 +1,56 @@
-const express = require("express");
-const { check } = require("express-validator");
+const express = require('express');
+const { check } = require('express-validator');
 const app = express();
 
 const {
-  getAllWorks,
-  createWork,
-  updateWork,
-  deleteWork,
-  getOneWork,
-  getWorksClient,
-  deleteAll,
-  loadFile,
-  getWorksByDataAndTurnedinState,
-  uploadImagenWork
-} = require("../controllers/works");
+	getAllWorks,
+	createWork,
+	updateWork,
+	deleteWork,
+	getOneWork,
+	getWorksClient,
+	deleteAll,
+	loadFile,
+	getWorksByDataAndTurnedinState,
+	uploadImagenWork,
+} = require('../controllers/works');
 
-const { fielsValidators } = require("../middlewares/fieldsValidators");
-const { validateJsonWebToken } = require("../middlewares/jwtValidator");
-const { isDate } = require("../helpers/isDate");
+const { fielsValidators } = require('../middlewares/fieldsValidators');
+const { validateJsonWebToken } = require('../middlewares/jwtValidator');
+const { isDate } = require('../helpers/isDate');
 
 const router = express.Router();
 
 // apply the middleware
 // app.use(validateJsonWebToken);
 // router.use(validateJsonWebToken);
-router.get("/", getAllWorks);
+router.get('/', getAllWorks);
 
 router.post(
-  "/",
-  [
-    check("marca", "La marca es obligatoria").not().isEmpty(),
-    check("modelo", "El modelo es obligatorio").not().isEmpty(),
-    check("emei", "El Emei es obligatorio").not().isEmpty(),
-    check("observaciones", "La observacion es obligatoria").not().isEmpty(),
-    check("estado", "El estado es obligatoria").not().isEmpty(),
-    check("fechaInicio", "la fecha de inicio es obligatoria").custom(isDate),
-    fielsValidators,
-  ],
-  createWork
+	'/',
+	[
+		check('marca', 'La marca es obligatoria').not().isEmpty(),
+		check('modelo', 'El modelo es obligatorio').not().isEmpty(),
+		check('observaciones', 'La observacion es obligatoria').not().isEmpty(),
+		check('estado', 'El estado es obligatoria').not().isEmpty(),
+		check('fechaInicio', 'la fecha de inicio es obligatoria').custom(isDate),
+		fielsValidators,
+	],
+	createWork
 );
 
-router.put("/:id", updateWork);
+router.put('/:id', updateWork);
 
-router.get("/:id", getOneWork);
+router.get('/:id', getOneWork);
 
-router.delete("/:id", deleteWork);
+router.delete('/:id', deleteWork);
 
-router.delete("/", deleteAll);
+router.delete('/', deleteAll);
 
-router.post("/uploadFileWork", uploadImagenWork);
+router.post('/uploadFileWork', uploadImagenWork);
 
-router.get("/client/:idClient", getWorksClient);
+router.get('/client/:idClient', getWorksClient);
 
-router.get("/historialWork/all", getWorksByDataAndTurnedinState);
+router.get('/historialWork/all', getWorksByDataAndTurnedinState);
 
 module.exports = router;
