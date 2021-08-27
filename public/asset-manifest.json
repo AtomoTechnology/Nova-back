@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/static/css/main.40680d54.chunk.css",
-    "main.js": "/static/js/main.14be9685.chunk.js",
-    "main.js.map": "/static/js/main.14be9685.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.d428299c.js",
-    "runtime-main.js.map": "/static/js/runtime-main.d428299c.js.map",
-    "static/css/2.8ce421ba.chunk.css": "/static/css/2.8ce421ba.chunk.css",
-    "static/js/2.49b4f009.chunk.js": "/static/js/2.49b4f009.chunk.js",
-    "static/js/2.49b4f009.chunk.js.map": "/static/js/2.49b4f009.chunk.js.map",
-    "index.html": "/index.html",
-    "static/css/2.8ce421ba.chunk.css.map": "/static/css/2.8ce421ba.chunk.css.map",
-    "static/css/main.40680d54.chunk.css.map": "/static/css/main.40680d54.chunk.css.map",
-    "static/js/2.49b4f009.chunk.js.LICENSE.txt": "/static/js/2.49b4f009.chunk.js.LICENSE.txt",
-    "static/media/bg.02bee48a.jpg": "/static/media/bg.02bee48a.jpg",
-    "static/media/logo03.57274dd7.png": "/static/media/logo03.57274dd7.png",
-    "static/media/userLogo.4bac9738.png": "/static/media/userLogo.4bac9738.png"
+    "main.css": "/Nova-front/static/css/main.e6223cd6.chunk.css",
+    "main.js": "/Nova-front/static/js/main.273b3447.chunk.js",
+    "main.js.map": "/Nova-front/static/js/main.273b3447.chunk.js.map",
+    "runtime-main.js": "/Nova-front/static/js/runtime-main.d6ac82e4.js",
+    "runtime-main.js.map": "/Nova-front/static/js/runtime-main.d6ac82e4.js.map",
+    "static/css/2.8ce421ba.chunk.css": "/Nova-front/static/css/2.8ce421ba.chunk.css",
+    "static/js/2.0a24e963.chunk.js": "/Nova-front/static/js/2.0a24e963.chunk.js",
+    "static/js/2.0a24e963.chunk.js.map": "/Nova-front/static/js/2.0a24e963.chunk.js.map",
+    "index.html": "/Nova-front/index.html",
+    "static/css/2.8ce421ba.chunk.css.map": "/Nova-front/static/css/2.8ce421ba.chunk.css.map",
+    "static/css/main.e6223cd6.chunk.css.map": "/Nova-front/static/css/main.e6223cd6.chunk.css.map",
+    "static/js/2.0a24e963.chunk.js.LICENSE.txt": "/Nova-front/static/js/2.0a24e963.chunk.js.LICENSE.txt",
+    "static/media/bg.02bee48a.jpg": "/Nova-front/static/media/bg.02bee48a.jpg",
+    "static/media/logo03.57274dd7.png": "/Nova-front/static/media/logo03.57274dd7.png",
+    "static/media/userLogo.4bac9738.png": "/Nova-front/static/media/userLogo.4bac9738.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.d428299c.js",
+    "static/js/runtime-main.d6ac82e4.js",
     "static/css/2.8ce421ba.chunk.css",
-    "static/js/2.49b4f009.chunk.js",
-    "static/css/main.40680d54.chunk.css",
-    "static/js/main.14be9685.chunk.js"
+    "static/js/2.0a24e963.chunk.js",
+    "static/css/main.e6223cd6.chunk.css",
+    "static/js/main.273b3447.chunk.js"
   ]
 }

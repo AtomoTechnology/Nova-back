@@ -21,10 +21,9 @@ const createWork = async (req, res = response) => {
 		} while (await Work.findOne({ codigo: workInicial.codigo }).limit(1));
 		// const validate = await Work.findOne({codigo: workInicial.codigo}).limit(1);
 
-		workInicial.total =
-			workInicial.precio +
-			(workInicial.precio * workInicial.recargo) / 100 -
-			(workInicial.precio * workInicial.descuento) / 100;
+		let descuento = (workInicial.precio * workInicial.descuento) / 100;
+		let recargo = (workInicial.precio * workInicial.recargo) / 100;
+		workInicial.total = workInicial.precio + recargo - descuento;
 		const work = await workInicial.save();
 		console.log(work);
 
@@ -145,10 +144,14 @@ const updateWork = async (req, res = response) => {
 		}
 		// console.log(newWork);
 
-		newWork.total =
-			newWork.precio +
-			(newWork.precio * newWork.recargo) / 100 -
-			(newWork.precio * newWork.descuento) / 100;
+		let descuento = (newWork.precio * newWork.descuento) / 100;
+		let recargo = (newWork.precio * newWork.recargo) / 100;
+		newWork.total = newWork.precio + recargo - descuento;
+
+		// newWork.total =
+		// 	newWork.precio +
+		// 	(newWork.precio * newWork.recargo) / 100 -
+		// 	(newWork.precio * newWork.descuento) / 100;
 		// if (newWork.estado === 'Entregado') {
 		// 	console.log('entregado');
 		// }
