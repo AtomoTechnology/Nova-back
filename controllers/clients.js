@@ -89,14 +89,7 @@ const updateClient = async (req, res = response) => {
 	const clientId = req.params.id;
 	try {
 		console.log(clientId);
-		const clientExist = await Client.findOne({ dni: req.body.dni });
 
-		if (clientExist) {
-			return res.status(400).json({
-				ok: false,
-				msg: 'Ya existe un usuario con este dni...',
-			});
-		}
 		const clientOriginal = await Client.findById(clientId);
 		if (!clientOriginal) {
 			return res.status(500).json({
