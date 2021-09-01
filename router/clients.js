@@ -14,6 +14,7 @@ const {
 	loadFile,
 	deleteAll,
 	uploadImagenCliente,
+	deleteOneClient,
 } = require('../controllers/clients');
 const { upload } = require('../helpers/multerSetUp');
 
@@ -40,4 +41,5 @@ router.put('/:id', validateJsonWebToken, updateClient);
 router.get('/:id', validateJsonWebToken, getOneClient);
 // router.delete("/:id", validateJsonWebToken, deleteWork);
 router.delete('/', validateJsonWebToken, deleteAll);
+router.delete('/:id', validateJsonWebToken, deleteOneClient);
 module.exports = router;

@@ -87,9 +87,16 @@ const getAllClient = async (req, res = response) => {
 
 const updateClient = async (req, res = response) => {
 	const clientId = req.params.id;
-
 	try {
 		console.log(clientId);
+		const clientExist = await Client.findOne({ dni: req.body.dni });
+
+		if (clientExist) {
+			return res.status(400).json({
+				ok: false,
+				msg: 'Ya existe un usuario con este dni...',
+			});
+		}
 		const clientOriginal = await Client.findById(clientId);
 		if (!clientOriginal) {
 			return res.status(500).json({
@@ -109,6 +116,32 @@ const updateClient = async (req, res = response) => {
 		return res.status(500).json({
 			ok: false,
 			msg: 'Habla con el administrador',
+		});
+	}
+};
+
+const deleteOneClient = async (req, res = response) => {
+	const clientId = req.params.id;
+	console.log('idclient');
+	console.log(clientId);
+	try {
+		const clientOriginal = await Client.findById(clientId);
+		if (!clientOriginal) {
+			return res.status(500).json({
+				ok: false,
+				msg: 'No existe un usuario con este id...',
+			});
+		}
+		const clientDeleted = await Client.findByIdAndDelete(clientId);
+		return res.status(201).json({
+			ok: true,
+			clientDeleted,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			ok: false,
+			msg: 'Habla con el administrador o Llama a Hilaire 3417207882 ',
 		});
 	}
 };
@@ -207,5 +240,6 @@ module.exports = {
 	updateClient,
 	// loadFile,
 	deleteAll,
+	deleteOneClient,
 	uploadImagenCliente,
 };
