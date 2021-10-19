@@ -40,6 +40,7 @@ app.post('/upload', upload.single('img'), function (req, res, next) {
 // module.exports = { upload };
 // create routers
 app.use('/api/state', require('./router/state'));
+app.use('/api/outgoings', require('./router/outgoings'));
 app.use('/api/auth', require('./router/auth'));
 app.use('/api/works', require('./router/works'));
 app.use('/api/clients', require('./router/clients'));

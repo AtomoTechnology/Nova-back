@@ -21,9 +21,12 @@ const createWork = async (req, res = response) => {
 		} while (await Work.findOne({ codigo: workInicial.codigo }).limit(1));
 		// const validate = await Work.findOne({codigo: workInicial.codigo}).limit(1);
 
-		let descuento = (workInicial.precio * workInicial.descuento) / 100;
-		let recargo = (workInicial.precio * workInicial.recargo) / 100;
-		workInicial.total = workInicial.precio + recargo - descuento;
+		let descuento =
+			(parseInt(workInicial.precio) * parseInt(workInicial.descuento)) / 100;
+		let recargo =
+			(parseInt(workInicial.precio) * parseInt(workInicial.recargo)) / 100;
+		workInicial.total = parseInt(workInicial.precio) + recargo - descuento;
+
 		const work = await workInicial.save();
 		console.log(work);
 
@@ -54,7 +57,9 @@ const createWork = async (req, res = response) => {
 };
 
 const getAllWorks = async (req, res = response) => {
-	const works = await Work.find().populate('cliente estado');
+	const works = await Work.find()
+		.sort({ fechaInicio: -1 })
+		.populate('cliente estado');
 	res.json({
 		ok: true,
 		works,
@@ -144,9 +149,10 @@ const updateWork = async (req, res = response) => {
 		}
 		// console.log(newWork);
 
-		let descuento = (newWork.precio * newWork.descuento) / 100;
-		let recargo = (newWork.precio * newWork.recargo) / 100;
-		newWork.total = newWork.precio + recargo - descuento;
+		let descuento =
+			(parseInt(newWork.precio) * parseInt(newWork.descuento)) / 100;
+		let recargo = (parseInt(newWork.precio) * parseInt(newWork.recargo)) / 100;
+		newWork.total = parseInt(newWork.precio) + recargo - descuento;
 
 		// newWork.total =
 		// 	newWork.precio +
