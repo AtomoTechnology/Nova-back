@@ -128,6 +128,7 @@ const getWorksClient = async (req, res = response) => {
 const updateWork = async (req, res = response) => {
 	// get the id form the url
 	const workId = req.params.id;
+	console.log('updateddd');
 
 	try {
 		//get the work by id
@@ -154,13 +155,61 @@ const updateWork = async (req, res = response) => {
 		let recargo = (parseInt(newWork.precio) * parseInt(newWork.recargo)) / 100;
 		newWork.total = parseInt(newWork.precio) + recargo - descuento;
 
-		// newWork.total =
-		// 	newWork.precio +
-		// 	(newWork.precio * newWork.recargo) / 100 -
-		// 	(newWork.precio * newWork.descuento) / 100;
-		// if (newWork.estado === 'Entregado') {
-		// 	console.log('entregado');
-		// }
+		const updateWork = await Work.findByIdAndUpdate(workId, newWork, {
+			new: true,
+		}).populate('cliente estado');
+		console.log('update work');
+		console.log(updateWork);
+
+		if (work.estado != newWork.estado) {
+			const wsu = await Work_State.findOne({ work: workId }).limit(1);
+			wsu.state.push({ nombre: updateWork.estado.name, fecha: Date() });
+			await Work_State.findByIdAndUpdate(wsu._id, wsu, {
+				new: true,
+			});
+		}
+
+		res.status(201).json({
+			ok: true,
+			updateWork,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			ok: false,
+			msg: 'habla con el administrador ',
+		});
+	}
+};
+
+const updateStateWork = async (req, res = response) => {
+	// get the id form the url
+	const workId = req.params.id;
+
+	try {
+		//get the work by id
+		const work = await Work.findById(workId);
+		// console.log(work);
+		if (!work) {
+			return res.status(404).json({
+				ok: false,
+				msg: 'no se encontró trabajo con ese id..',
+			});
+		}
+		const newWork = { ...req.body };
+		const stateToModify = await State.findById(newWork.estado);
+		if (stateToModify != null) {
+			console.log(stateToModify, moment.now());
+			if (stateToModify.name === 'Entregado') {
+				newWork.fechaFin = moment.now();
+			}
+		}
+		// console.log(newWork);
+
+		let descuento =
+			(parseInt(newWork.precio) * parseInt(newWork.descuento)) / 100;
+		let recargo = (parseInt(newWork.precio) * parseInt(newWork.recargo)) / 100;
+		newWork.total = parseInt(newWork.precio) + recargo - descuento;
 
 		const updateWork = await Work.findByIdAndUpdate(workId, newWork, {
 			new: true,
@@ -205,6 +254,7 @@ const deleteWork = async (req, res = response) => {
 		// const newWork = { ...req.body };
 
 		await Work.findByIdAndDelete(workId);
+		console.log('deletedddd');
 
 		res.status(201).json({
 			ok: true,
