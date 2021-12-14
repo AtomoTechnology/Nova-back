@@ -37,6 +37,46 @@ router.get('/', async (req, res) => {
 		});
 	}
 });
+router.get('/:id', async (req, res) => {
+	const outGoingId = req.params.id;
+	try {
+		const gasto = await Outgoing.findById(outGoingId);
+		if (!gasto) {
+			return res
+				.status(203)
+				.json({ ok: true, msg: 'No hay gasto con este id!!!' });
+		}
+		return res.status(201).json({
+			ok: true,
+			gasto,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.json({
+			ok: false,
+			msg: 'Error al agregar el gasto. Hable con el admin...',
+		});
+	}
+});
+
+router.delete('/:id', async (req, res) => {
+	const outGoingId = req.params.id;
+	console.log(outGoingId);
+
+	try {
+		await Outgoing.findByIdAndDelete(outGoingId);
+		return res.status(201).json({
+			ok: true,
+			msg: 'Gasto borrado con exitos',
+		});
+	} catch (error) {
+		console.log(error);
+		return res.json({
+			ok: false,
+			msg: 'Error al agregar el gasto. Hable con el admin...',
+		});
+	}
+});
 
 router.delete('/', async (req, res) => {
 	try {

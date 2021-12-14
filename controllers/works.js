@@ -9,6 +9,7 @@ const Work_State = require('../models/Work_State');
 const { generateCodigoWork } = require('../helpers/generateCodigoWork');
 const moment = require('moment');
 const { cloudinary } = require('../helpers/cloudinary');
+const { findByIdAndDelete } = require('../models/Work_State');
 
 const createWork = async (req, res = response) => {
 	// console.log(req.body);
@@ -140,21 +141,29 @@ const updateWork = async (req, res = response) => {
 				msg: 'no se encontró trabajo con ese id..',
 			});
 		}
+		// console.log(work);
 		const newWork = { ...req.body };
 		const stateToModify = await State.findById(newWork.estado);
+
 		if (stateToModify != null) {
-			console.log(stateToModify, moment.now());
+			// console.log(stateToModify, moment.now());
 			if (stateToModify.name === 'Entregado') {
 				newWork.fechaFin = moment.now();
 			}
 		}
 		// console.log(newWork);
-
-		let descuento =
-			(parseInt(newWork.precio) * parseInt(newWork.descuento)) / 100;
-		let recargo = (parseInt(newWork.precio) * parseInt(newWork.recargo)) / 100;
+		let descuento = 0;
+		let recargo = 0;
+		if (newWork.descuento != null) {
+			descuento =
+				(parseInt(newWork.precio) * parseInt(newWork.descuento)) / 100;
+		}
+		if (newWork.recargo != null) {
+			recargo = (parseInt(newWork.precio) * parseInt(newWork.recargo)) / 100;
+		}
 		newWork.total = parseInt(newWork.precio) + recargo - descuento;
-
+		console.log('hasta ahi');
+		console.log(newWork);
 		const updateWork = await Work.findByIdAndUpdate(workId, newWork, {
 			new: true,
 		}).populate('cliente estado');
@@ -251,10 +260,27 @@ const deleteWork = async (req, res = response) => {
 				msg: 'no se encontró trabajo con ese id..',
 			});
 		}
+
+		//fiund all the work_state before delete
+
+		const workState = await Work_State.find({ work: workId });
+		if (workState) {
+			await Work_State.deleteOne({ work: workId });
+		}
+
+		// return res.json({
+		// 	ok: true,
+		// 	workState,
+		// });
+
+		// return res.status(201).json({
+		// 	ok: 'Hilaire',
+		// 	work,
+		// 	workState,
+		// });
 		// const newWork = { ...req.body };
 
 		await Work.findByIdAndDelete(workId);
-		console.log('deletedddd');
 
 		res.status(201).json({
 			ok: true,
