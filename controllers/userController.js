@@ -40,12 +40,37 @@ exports.getUser = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'success',
-    message: 'were implements that router update',
+exports.updateUser = catchAsync(async (req, res, next) => {
+  //create error for updating the passoword
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError('This route is not for password update. Please use /updateMyPassword', 400)
+    );
+  }
+
+  //update
+  const filterBody = filterObj(
+    req.body,
+    'name',
+    'email',
+    'dni',
+    'phone1',
+    'phone2',
+    'nota',
+    'direction'
+  );
+  const updatedUser = await User.findByIdAndUpdate(req.params.id, filterBody, {
+    new: true,
+    runValidators: true,
   });
-};
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: updatedUser,
+    },
+  });
+});
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndDelete(req.params.id);

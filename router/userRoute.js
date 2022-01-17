@@ -8,7 +8,7 @@ usersRouter.post('/signin', authController.signIn);
 usersRouter.post('/forgotPassword', authController.forgotPassword);
 usersRouter.patch('/resetPassword/:token', authController.resetPassword);
 
-usersRouter.get('/updatePasswordFormerUsers', userController.updatePasswordFormerUser);
+// usersRouter.get('/updatePasswordFormerUsers', userController.updatePasswordFormerUser);
 
 usersRouter.use(authController.protect);
 
@@ -30,6 +30,7 @@ usersRouter
 usersRouter
   .route('/:id')
   .get(userController.getUser)
-  .delete(authController.restrictTo('admin'), userController.deleteUser); //.patch(updateUser);
+  .delete(authController.restrictTo('admin'), userController.deleteUser)
+  .patch(userController.updateUser); //.patch(updateUser);
 
 module.exports = usersRouter;
