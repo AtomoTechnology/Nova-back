@@ -1,7 +1,6 @@
-const moment = require("moment");
+const moment = require('moment');
 
 const isDate = (valueField) => {
-  console.log(valueField);
   if (!valueField) {
     return false;
   }

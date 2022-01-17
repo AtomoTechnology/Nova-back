@@ -1,6 +1,6 @@
-module.exports = (order) => {
-	const moment = require('moment');
-	return `
+module.exports = (work) => {
+  const moment = require('moment');
+  return `
   
     <!DOCTYPE html>
     <html lang="en">
@@ -86,39 +86,35 @@ module.exports = (order) => {
           <main>
             <section class="main-header">
               <div class="fecha-orden">
-                <h3>ORDEN DE SERVICIO TÉCNICO NRO :${order?._id}</h3>
-                <h3 class="orden-fecha">Fecha :${moment(order?.createAt).format(
-									'DD-MM-YYYY'
-								)}</h3>
+                <h3>ORDEN DE SERVICIO TÉCNICO NRO :${work?.codigo}</h3>
+                <h3 class="orden-fecha">Fecha :${moment(new Date()).format(
+                  'DD-MM-YYYY HH:mm:ss'
+                )}</h3>
               </div>
             </section>
             <h3>PRESUPUESTO Y DIAGNÓSTICO TÉCNICO:</h3>
             <section class="datos-cliente">
               <h2>datos del Cliente</h2>
               <div class="cliente">
-                <p>Nombre y Apellido :${order?.work?.cliente?.name}</p>
-                <p>DNI :${order?.work?.cliente?.dni}</p>
-                <p>Direccion :${order?.work?.cliente?.direction}</p>
+                <p>Nombre y Apellido :${work?.cliente?.name}</p>
+                <p>DNI :${work?.cliente?.dni}</p>
+                <p>Direccion :${work?.cliente?.direction}</p>
                 <p>Localidad :</p>
-                <p>telefono :${order?.work?.cliente?.phone1}</p>
+                <p>telefono :${work?.cliente?.phone1}</p>
                 <p>E_mail :</p>
               </div>
             </section>
             <section class="datos-equipo">
               <h2>Datos del Equipo</h2>
               <div class="equipo">
-                <p>Equipo a reparar(marca/modelo) :${
-									order?.work?.marca + ' - ' + order?.work?.modelo
-								} </p>
-                <p>Imei : ${order?.work?.emei} Codigo Desbloqueo :${
-		order?.work?.contrasena + '  ' + order?.work?.patron
-	}</p>
-                <p>Observaciones :  ${order?.work?.observaciones}</p>
-                <p>Falla Encontrada :  ${order?.work?.fachasEncontradas}</p>
-                <p>Descripcion del trabajo a realizar : ${
-									order?.work?.descripcion
-								}</p>
-                <p>Precio de la reparacion : ${order?.work?.precio} </p>
+                <p>Equipo a reparar(marca/modelo) :${work?.marca + ' - ' + work?.modelo} </p>
+                <p>Imei : ${work?.emei} Codigo Desbloqueo :${
+    work?.contrasena + '  ' + work?.patron
+  }</p>
+                <p>Observaciones :  ${work?.observaciones}</p>
+                <p>Falla Encontrada :  ${work?.fachasEncontradas}</p>
+                <p>Descripcion del trabajo a realizar : ${work?.descripcion}</p>
+                <p>Precio de la reparacion : ${work?.precio} </p>
                 <p>garantia de reparacion: 3 meses</p>
                 <p>El equipo enciende :...</p>
               </div>

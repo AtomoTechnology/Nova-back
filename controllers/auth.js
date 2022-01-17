@@ -1,20 +1,20 @@
-const { response } = require("express");
-const { validationResult, body } = require("express-validator");
-const User = require("../models/Users");
-const bcrypt = require("bcryptjs");
-const { generateToken } = require("../helpers/jwt");
+const { response } = require('express');
+const { validationResult, body } = require('express-validator');
+const User = require('../models/Users');
+const bcrypt = require('bcryptjs');
+const { generateToken } = require('../helpers/jwt');
 
 const getAllUsers = (req, res = response) => {
   res.json([
     {
-      name: "name",
+      name: 'name',
       dni: 6865875,
-      direction: "ssarmiento",
+      direction: 'ssarmiento',
     },
     {
-      name: "name1",
+      name: 'name1',
       dni: 067706,
-      direction: "españa",
+      direction: 'españa',
     },
   ]);
 };
@@ -30,7 +30,7 @@ const createUser = async (req, res = response) => {
     if (user) {
       return res.status(500).json({
         ok: false,
-        msg: "Ya existe este nombre de usuario!!! Intente con otra por favor ",
+        msg: 'Ya existe este nombre de usuario!!! Intente con otra por favor ',
       });
     }
     // console.log(role);
@@ -54,7 +54,7 @@ const createUser = async (req, res = response) => {
 
     res.status(201).json({
       ok: true,
-      msg: "Usuario registrado con exito...",
+      msg: 'Usuario registrado con exito...',
       uid: user.id,
       username: user.username,
       role: user.role,
@@ -64,7 +64,7 @@ const createUser = async (req, res = response) => {
     console.log(error);
     res.status(500).json({
       ok: false,
-      msg: "Comunica con el administrador...",
+      msg: 'Comunica con el administrador...',
     });
   }
 };
@@ -73,15 +73,15 @@ const createUser = async (req, res = response) => {
 
 const updateUser = (req, res = response) => {
   res.json({
-    name: "name",
+    name: 'name',
     dni: 6865875,
-    direction: "ssarmiento",
-    msg: "uodate user",
+    direction: 'ssarmiento',
+    msg: 'uodate user',
   });
 };
 const renewJwt = async (req, res = response) => {
   const { uid, username, role } = req;
-  console.log("data", username, uid, role);
+  console.log('data', username, uid, role);
   //generate an other token
   const token = await generateToken(uid, username, role);
   res.json({
@@ -105,7 +105,7 @@ const doLogin = async (req, res = response) => {
     if (!user) {
       return res.status(500).json({
         ok: false,
-        msg: "Usuario y/o contraseña incorrecta!!!",
+        msg: 'Usuario y/o contraseña incorrecta!!!',
       });
     }
 
@@ -114,7 +114,7 @@ const doLogin = async (req, res = response) => {
     if (!validatePassword) {
       return res.status(500).json({
         ok: false,
-        msg: "Usuario y/o contraseña incorrecta!!!",
+        msg: 'Usuario y/o contraseña incorrecta!!!',
       });
     }
 
@@ -123,7 +123,7 @@ const doLogin = async (req, res = response) => {
     const token = await generateToken(user.id, user.username, user.role);
     res.status(201).json({
       ok: true,
-      msg: "user signed in",
+      msg: 'user signed in',
       uid: user.id,
       username: user.username,
       role: user.role,
@@ -133,7 +133,7 @@ const doLogin = async (req, res = response) => {
     console.log(error);
     res.status(500).json({
       ok: false,
-      msg: "Comunica con el administrador...",
+      msg: 'Comunica con el administrador...',
     });
   }
 };

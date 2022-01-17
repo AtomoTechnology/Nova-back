@@ -1,14 +1,14 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 const Work_StateSchema = Schema({
   createAt: {
     type: Date,
     required: true,
-    default: Date(),
+    default: Date.now,
   },
   work: {
     type: Schema.Types.ObjectId,
-    ref: "Work",
-    required: true,
+    ref: 'Work',
+    required: [true, 'Necesita especificar un trabajo para esta accion'],
   },
   state: [
     {
@@ -18,4 +18,4 @@ const Work_StateSchema = Schema({
   ],
 });
 
-module.exports = model("Work_State", Work_StateSchema);
+module.exports = model('Work_State', Work_StateSchema);
