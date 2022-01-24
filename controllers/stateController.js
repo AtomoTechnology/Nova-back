@@ -1,5 +1,6 @@
-const State = require('../models/State');
+const State = require('../models/stateModel');
 const catchAsync = require('./../helpers/catchAsync');
+const factory = require('./factoryController');
 
 exports.create = catchAsync(async (req, res) => {
   const state = await State.create(req.body);

@@ -1,6 +1,5 @@
-const State = require('../models/State');
+const State = require('../models/stateModel');
 const Work = require('../models/workModel');
-const Work_State = require('../models/Work_State');
 const { generateCodigoWork } = require('../helpers/generateCodigoWork');
 const moment = require('moment');
 const catchAsync = require('../helpers/catchAsync');
@@ -390,25 +389,20 @@ exports.UpdateStatesToArray = catchAsync(async (req, res, next) => {
 //   } catch (error) {}
 // };
 
-// const getWorksByDataAndTurnedinState = async (req, res) => {
-//   try {
-//     const works = await Work.find({
-//       estado: '608d831076b79112c456a50b',
-//     })
-//       .populate('cliente estado')
-//       .sort('fechaInicio');
-//     console.log(works);
-//     return res.json({
-//       ok: true,
-//       works,
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       ok: false,
-//       msg: 'habla con el administrador....',
-//     });
-//   }
-// };
+exports.getWorksByDataAndTurnedinState = catchAsync(async (req, res, next) => {
+  const state = await State.findOne({ name: 'Entregado' });
+
+  const works = await Work.find({
+    estado: state._id,
+  }).sort('fechaInicio');
+
+  res.json({
+    status: 'success',
+    data: {
+      data: works,
+    },
+  });
+});
 
 // module.exports = {
 //   getAllWorks,

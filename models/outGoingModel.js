@@ -1,18 +1,17 @@
 const { Schema, model } = require('mongoose');
 const OutgoingsSchema = Schema({
-	description: {
-		type: String,
-		required: true,
-	},
-	date: {
-		type: Date,
-		required: true,
-		default: Date.now,
-	},
-	amount: {
-		type: Number,
-		required: true,
-	},
+  description: {
+    type: String,
+    required: [true, 'Es obligatorio una descripcion'],
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  amount: {
+    type: Number,
+    required: [true, 'Hay que especificar un monto'],
+  },
 });
 
 module.exports = model('Outgoing', OutgoingsSchema);

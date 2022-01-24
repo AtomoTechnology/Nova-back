@@ -32,12 +32,13 @@ app.use(fileUpload());
 // console.log('uiui');
 // module.exports = { upload };
 // create routers
-app.use('/api/v1/state', require('./router/state'));
+app.use('/api/v1/state', require('./router/stateRoute'));
 app.use('/api/v1/outgoings', require('./router/outGoingsRoute'));
 app.use('/api/v1/users', require('./router/userRoute'));
 app.use('/api/v1/works', require('./router/workRoute'));
+app.use('/api/v1/queries', require('./router/queryRoute'));
 // app.use('/api/v1/orders', require('./router/orders'));
-app.use('/api/v1/work_state', require('./router/work_State'));
+// app.use('/api/v1/work_state', require('./router/work_State'));
 // app.use('/api/v1/auth', require('./router/auth'));
 // app.use('/api/clients', require('./router/clients'));
 
