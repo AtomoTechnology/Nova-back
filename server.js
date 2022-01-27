@@ -1,13 +1,8 @@
-const express = require("express");
-const mongoose = require("mongoose");
-require("dotenv").config();
+const express = require('express');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const app = express();
-// const { dbConnection } = require("./database/config");
-
-//connection to the database
-// dbConnection();
-
 mongoose
   .connect(process.env.dbConnect, {
     useNewUrlParser: true,
@@ -16,7 +11,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then((conn) => {
-    console.log("DB CONNECTED SUCCESSFULLY");
+    console.log('DB CONNECTED SUCCESSFULLY');
   });
 
 app.listen(process.env.PORT, () => {
