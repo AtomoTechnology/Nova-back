@@ -7,6 +7,7 @@ const querySchema = mongoose.Schema({
   },
   user: {
     type: mongoose.Schema.ObjectId,
+    ref: 'Client',
     required: [true, 'Tienes que ser un usuario para poder hacer una consulta'],
   },
   message: {
@@ -35,6 +36,13 @@ const querySchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+});
+
+querySchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'user',
+  });
+  next();
 });
 
 const Query = mongoose.model('Query', querySchema);

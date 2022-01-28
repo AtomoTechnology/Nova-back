@@ -1,24 +1,35 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const fileUpload = require('express-fileupload');
+// const fileUpload = require('express-fileupload');
 const app = require('./server');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 const cors = require('cors');
+const path = require('path');
 
 // const multer = require('multer');
 
 //import fileUpload
 
 // enable the cors
+app.use(express.static(path.join(__dirname, '/public/build')));
 app.use(cors());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //create the public folder
-app.use(express.static('public'));
+// console.log(path.join(__dirname, '/public'));
 
 //receive datas form the body
 app.use(express.json());
-app.use(fileUpload());
+// app.use(fileUpload());
 
+app.use(xss());
+app.use(hpp());
+app.use(helmet());
+app.use(mongoSanitize());
 //other way to set the public folder
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -46,7 +57,7 @@ app.use('/api/v1/queries', require('./router/queryRoute'));
 app.use('*', (req, res, next) => {
   res.status(500).json({
     ok: false,
-    msg: 'URL Incorrecto...',
+    msg: 'URLll Incorrecto...',
   });
   next();
 });
