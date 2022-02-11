@@ -4,14 +4,13 @@ const queryController = require('./../controllers/queryController');
 const authController = require('./../controllers/authController');
 
 router.use(authController.protect);
+router.put('/:id/setRead', queryController.UpdateRead);
 
-router
-  .route('/')
-  .get(queryController.GetAll)
-  .post(authController.restrictTo('user'), queryController.Create);
+router.route('/').get(queryController.GetAll).post(authController.restrictTo('user', 'admin'), queryController.Create);
 router
   .route('/:id')
+  .get(queryController.GetById)
   .delete(authController.restrictTo('admin'), queryController.Delete)
-  .patch(authController.restrictTo('admin', 'tecnico'), queryController.ResponseQuery);
+  .patch(queryController.ResponseQuery);
 
 module.exports = router;

@@ -21,6 +21,7 @@ const createSendToken = (user, statusCode, res) => {
 
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
   res.cookie('jwt', token, cookieOptions);
+
   user.password = undefined;
 
   res.status(statusCode).json({
@@ -38,6 +39,10 @@ exports.renewToken = catchAsync(async (req, res, next) => {
 
 exports.signUp = catchAsync(async (req, res, next) => {
   //bad practice
+  const exist = await User.findOne({ $or: [{ dni: req.body.dni }, { email: req.body.email }] });
+  console.log(exist);
+
+  if (exist) return next(new AppError('Este usuario ya existe. Por favor Inicia Sesion con tu dni y contraseña.', 500));
   const newUser = await User.create(req.body);
   // const newUser = await User.create({
   //   name: req.body.name,
@@ -52,18 +57,17 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
 exports.signIn = catchAsync(async (req, res, next) => {
   const { dni, password } = req.body;
-  // console.log(dni);
 
   //validate email and password
   if (!dni || !password) {
-    return next(new AppError('Provide a email and a password please.', 400));
+    return next(new AppError('Ingrese su DNI y/o su contraseña por favor', 400));
   }
 
   const user = await User.findOne({ dni }).select('+password');
 
   //validate user and password
   if (!user || !(await user.checkPassword(password, user.password))) {
-    return next(new AppError('Incorrect Email or  password.', 401));
+    return next(new AppError('DNI y/o Contraseña incorrecta.', 401));
   }
   // console.log(user);
   req.user = user;
@@ -106,12 +110,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   //check if user change the password
   if (currentUser.changePasswordAfter(decoded.iat)) {
-    return next(
-      new AppError(
-        'Este usuario cambió su contraseña recientemente . Por favor inicia session.',
-        401
-      )
-    );
+    return next(new AppError('Este usuario cambió su contraseña recientemente . Por favor inicia session.', 401));
   }
 
   //grant the access

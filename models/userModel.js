@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Por Favor ingrese su nombre'],
     trim: true,
-    // lowercase: true,
   },
 
   dni: {

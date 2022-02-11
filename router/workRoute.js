@@ -2,6 +2,8 @@ const router = require('express').Router();
 const workController = require('../controllers/workController');
 const authController = require('../controllers/authController');
 
+router.post('/code', workController.GetWorkByCode);
+
 router.use(authController.protect);
 
 // router.use(authController.restrictTo('admin', 'tecnico'));
@@ -24,11 +26,7 @@ router
 router.delete('/', workController.deleteAll);
 router.route('/generateOrder/:id').post(workController.GenerateOrder);
 router.route('/download/Order').get(workController.DownloadOrder);
-router.get(
-  '/historialWork/all',
-  authController.restrictTo('admin'),
-  workController.getWorksByDataAndTurnedinState
-);
+router.get('/historialWork/all', authController.restrictTo('admin'), workController.getWorksByDataAndTurnedinState);
 
 // router.post('/uploadFileWork', workController.uploadImagenWork);
 

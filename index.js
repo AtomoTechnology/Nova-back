@@ -8,14 +8,16 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
 const path = require('path');
+const HandleGlobalError = require('./controllers/errorController');
 
 // const multer = require('multer');
 
 //import fileUpload
 
 // enable the cors
-app.use(express.static(path.join(__dirname, '/public/build')));
+
 app.use(cors());
+app.use(express.static(path.join(__dirname, '/public/build')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -62,12 +64,6 @@ app.use('*', (req, res, next) => {
   next();
 });
 
-app.use((err, req, res, next) => {
-  return res.status(400).json({
-    status: err.status,
-    message: err.message,
-    err,
-  });
-});
+app.use(HandleGlobalError);
 
 // hear the petition

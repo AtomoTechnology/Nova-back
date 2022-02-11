@@ -1,4 +1,3 @@
-// const AppError = require('../helpers/AppError');
 const AppError = require('../helpers/AppError');
 const catchAsync = require('../helpers/catchAsync');
 const User = require('./../models/userModel');
@@ -16,7 +15,7 @@ const filterObj = (obj, ...allowedFields) => {
 exports.getAllUsers = async (req, res) => {
   const users = await User.find().sort({ createAt: -1, name: 1 });
 
-  res.status(500).json({
+  res.status(200).json({
     status: 'success',
     result: users.length,
     data: {
@@ -87,7 +86,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   //create error for updating the passoword
   if (req.body.password || req.body.passwordConfirm) {
     return next(
-      new AppError('This route is not for password update. Please use /updateMyPassword', 400)
+      new AppError('Esta routa no es para cambiar contraseña. Por favor usa /updateMyPassword', 400)
     );
   }
 
@@ -124,20 +123,20 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.updatePasswordFormerUser = catchAsync(async (req, res, next) => {
-  const users = await User.find({ password: null });
+// exports.updatePasswordFormerUser = catchAsync(async (req, res, next) => {
+//   const users = await User.find({ password: null });
 
-  for (let i = 0; i < users.length; i++) {
-    users[i].password = '12345678';
-    users[i].passwordConfirm = '12345678';
-    users[i].save({ validateBeforeSave: false });
-    console.log('save..', i);
-  }
-  // { createAt: { $gte: new Date('2022-01-10') },
-  // email: { $ne: null },}
-  res.status(201).json({
-    res: users.length,
-    status: 'success',
-    message: 'Contraseñas actualizadas con existosss',
-  });
-});
+//   for (let i = 0; i < users.length; i++) {
+//     users[i].password = '12345678';
+//     users[i].passwordConfirm = '12345678';
+//     users[i].save({ validateBeforeSave: false });
+//     console.log('save..', i);
+//   }
+//   // { createAt: { $gte: new Date('2022-01-10') },
+//   // email: { $ne: null },}
+//   res.status(201).json({
+//     res: users.length,
+//     status: 'success',
+//     message: 'Contraseñas actualizadas con exito',
+//   });
+// });

@@ -3,8 +3,24 @@ const catchAsync = require('../helpers/catchAsync');
 const Query = require('../models/queryModel');
 const factory = require('./factoryController');
 
-exports.GetAll = factory.GetAll(Query);
+// exports.GetAll = factory.GetAll(Query);
+exports.GetAll = catchAsync(async (req, res, next) => {
+  console.log(req.user);
+  let query = {};
+  if (req.user.role === 'user') {
+    query = { user: req.user._id };
+  }
+  const docs = await Query.find(query);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: docs,
+    },
+  });
+});
+
 exports.Delete = factory.DeleteOne(Query);
+exports.GetById = factory.GetOne(Query);
 
 exports.Create = catchAsync(async (req, res, next) => {
   const query = await Query.create({
@@ -35,6 +51,23 @@ exports.ResponseQuery = catchAsync(async (req, res, next) => {
     status: 'success',
     data: {
       query: querySave,
+    },
+  });
+});
+
+exports.UpdateRead = catchAsync(async (req, res, next) => {
+  const idQuery = req.params.id;
+  const query = await Query.findById(idQuery);
+  if (!query) return next(new AppError('No hay consultas con ese id', 400));
+
+  const q = await Query.findByIdAndUpdate(idQuery, req.body, {
+    new: true,
+  });
+
+  res.status(201).json({
+    status: 'success',
+    data: {
+      query: q,
     },
   });
 });

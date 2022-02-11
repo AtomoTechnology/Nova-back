@@ -69,6 +69,18 @@ exports.getAllWorks = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.GetWorkByCode = catchAsync(async (req, res, next) => {
+  console.log(req.body);
+  const work = await Work.findOne({ codigo: req.body.codigo });
+
+  if (!work) return next(new AppError('No se encontró trabajo con ese codigo..', 400));
+
+  res.status(200).json({
+    status: 'success',
+    work,
+  });
+});
+
 exports.getOneWork = catchAsync(async (req, res, next) => {
   const workId = req.params.id;
   const work = await Work.findById(workId);
@@ -117,9 +129,7 @@ exports.updateWork = catchAsync(async (req, res, next) => {
     }
   }
 
-  console.log('117', work.estado._id, newWork.estado);
   if (work.estado._id != newWork.estado) {
-    console.log('siiiiiiiiiii');
     const state = await State.findById(newWork.estado);
     work.states.push({ nombre: state.name });
     newWork.states = work.states;
@@ -144,13 +154,13 @@ exports.deleteWork = catchAsync(async (req, res, next) => {
   if (!work) return next(new AppError('No se encontró trabajo con ese id', 404));
 
   //found all the work_state before delete
-  const workState = await Work_State.find({ work: workId });
-  console.log(workState);
-  if (workState.length > 0) {
-    console.log('no entraaaa');
-    await Work_State.deleteOne({ work: workId });
-  }
-  console.log('sigueeeeeee');
+  // const workState = await Work_State.find({ work: workId });
+  // console.log(workState);
+  // if (workState.length > 0) {
+  //   console.log('no entraaaa');
+  //   await Work_State.deleteOne({ work: workId });
+  // }
+  // console.log('sigueeeeeee');
 
   await Work.findByIdAndDelete(workId);
 
@@ -176,14 +186,12 @@ exports.GenerateOrder = catchAsync(async (req, res, next) => {
 
   if (!work) return next(new AppError('No se encontró trabajo con ese id', 404));
 
-  pdf
-    .create(templatePdf(work), {})
-    .toFile(`${path.join(os.homedir(), 'downloads')}/order.pdf`, function (err) {
-      if (err) {
-        res.send(Promise.reject());
-      }
-      res.send(Promise.resolve());
-    });
+  pdf.create(templatePdf(work), {}).toFile(`${path.join(os.homedir(), 'downloads')}/order.pdf`, function (err) {
+    if (err) {
+      res.send(Promise.reject());
+    }
+    res.send(Promise.resolve());
+  });
 });
 
 exports.DownloadOrder = catchAsync(async (req, res, next) => {
