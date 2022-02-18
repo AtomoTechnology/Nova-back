@@ -44,8 +44,8 @@ exports.createWork = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllWorks = catchAsync(async (req, res, next) => {
-  let query = Work.find();
-
+  const sta = await State.findOne({ name: 'Entregado' });
+  let query = Work.find({ estado: { $ne: sta._id } });
   query = query.sort('-fechaInicio precio'); //
 
   const page = req.query.page * 1 || 1;
@@ -53,16 +53,16 @@ exports.getAllWorks = catchAsync(async (req, res, next) => {
   const skip = (page - 1) * limit;
 
   query = query.skip(skip).limit(limit);
-  const totalWork = await Work.countDocuments();
-  const numberPage = Math.ceil(totalWork / limit);
+  // const totalWork = await Work.countDocuments();
+  // const numberPage = Math.ceil(totalWork / limit);
 
   const works = await query;
 
   res.json({
     status: 'success',
-    page: numberPage,
+    page: works.length / limit,
     results: works.length,
-    total: totalWork,
+    total: works.length,
     data: {
       works,
     },
@@ -103,10 +103,10 @@ exports.getWorksClient = catchAsync(async (req, res, next) => {
 
   const works = await Work.find({ cliente: idClient }).sort('-fechaInicio');
 
-  if (!works) return next(new AppError('No existe usuario con ese ID', 404));
-  if (works.length === 0) return next(new AppError('No se encontró trabajo para es usuario', 404));
+  if (!works) return next(new AppError('No existe usuario con ese ID', 500));
+  // if (works.length === 0) return next(new AppError('No se encontró trabajo para es usuario', 204));
 
-  res.status(201).json({
+  res.status(200).json({
     status: 'success',
     results: works.length,
     data: {
@@ -134,6 +134,36 @@ exports.updateWork = catchAsync(async (req, res, next) => {
     work.states.push({ nombre: state.name });
     newWork.states = work.states;
   }
+
+  const updateWork = await Work.findByIdAndUpdate(workId, newWork, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      work: updateWork,
+    },
+  });
+});
+
+exports.UpdateState = catchAsync(async (req, res, next) => {
+  const workId = req.params.id;
+  const work = await Work.findById(workId);
+
+  if (!work) return next(new AppError('No se encontró trabajo con ese id', 404));
+
+  if (req.body.stateName === 'Entregado') {
+    work.fechaFin = moment.now();
+  }
+
+  if (work.estado._id != req.body.stateId) {
+    const state = await State.findById(newWork.estado);
+    work.states.push({ nombre: state.name });
+    newWork.states = work.states;
+  }
+  work.estado = req.body.stateId;
 
   const updateWork = await Work.findByIdAndUpdate(workId, newWork, {
     new: true,
@@ -234,17 +264,24 @@ exports.WorkStats = catchAsync(async (req, res, next) => {
 });
 exports.UpdateStatesToArray = catchAsync(async (req, res, next) => {
   const formerStates = await Work_State.find();
-
-  // formerStates.forEach(async (fs) => {
-  //   await Work.findByIdAndUpdate(fs.work, { states: fs.state });
-  // });
-
-  // const works = await Work.find();
-
   res.status(200).json({
     status: 'success',
     res: formerStates.length,
-    // works,
+  });
+});
+
+exports.getWorksByDataAndTurnedinState = catchAsync(async (req, res, next) => {
+  const state = await State.findOne({ name: 'Entregado' });
+
+  const works = await Work.find({
+    estado: state._id,
+  }).sort('-fechaFin');
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: works,
+    },
   });
 });
 
@@ -396,21 +433,6 @@ exports.UpdateStatesToArray = catchAsync(async (req, res, next) => {
 //     });
 //   } catch (error) {}
 // };
-
-exports.getWorksByDataAndTurnedinState = catchAsync(async (req, res, next) => {
-  const state = await State.findOne({ name: 'Entregado' });
-
-  const works = await Work.find({
-    estado: state._id,
-  }).sort('fechaInicio');
-
-  res.json({
-    status: 'success',
-    data: {
-      data: works,
-    },
-  });
-});
 
 // module.exports = {
 //   getAllWorks,

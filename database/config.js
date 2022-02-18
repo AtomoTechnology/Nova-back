@@ -1,19 +1,8 @@
-const mongoose = require("mongoose");
+const { Sequelize } = require('sequelize');
 
-const dbConnection = async () => {
-  try {
-    mongoose.connect(process.env.dbConnect, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-      useUnifiedTopology: true,
-    });
-    console.log("connection with exito...");
-  } catch (error) {
-    console.log(error);
-  }
-};
+const sequelize = new Sequelize('nova', 'root', 'jhm.ok', {
+  host: 'localhost',
+  dialect: 'mysql',
+});
 
-module.exports = {
-  dbConnection,
-};
+module.exports = sequelize;

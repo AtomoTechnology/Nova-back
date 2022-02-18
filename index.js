@@ -9,7 +9,6 @@ const hpp = require('hpp');
 const cors = require('cors');
 const path = require('path');
 const HandleGlobalError = require('./controllers/errorController');
-
 // const multer = require('multer');
 
 //import fileUpload
@@ -19,8 +18,8 @@ const HandleGlobalError = require('./controllers/errorController');
 app.use(cors());
 app.use(express.static(path.join(__dirname, '/public/build')));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '220mb' }));
+app.use(bodyParser.urlencoded({ limit: '220mb', extended: true }));
 //create the public folder
 // console.log(path.join(__dirname, '/public'));
 
@@ -50,6 +49,7 @@ app.use('/api/v1/outgoings', require('./router/outGoingsRoute'));
 app.use('/api/v1/users', require('./router/userRoute'));
 app.use('/api/v1/works', require('./router/workRoute'));
 app.use('/api/v1/queries', require('./router/queryRoute'));
+app.use('/api/v1/banners', require('./router/bannerRoute'));
 // app.use('/api/v1/orders', require('./router/orders'));
 // app.use('/api/v1/work_state', require('./router/work_State'));
 // app.use('/api/v1/auth', require('./router/auth'));
@@ -59,7 +59,7 @@ app.use('/api/v1/queries', require('./router/queryRoute'));
 app.use('*', (req, res, next) => {
   res.status(500).json({
     ok: false,
-    msg: 'URLll Incorrecto...',
+    msg: `this url : ${req.originalUrl} does not exist`,
   });
   next();
 });
