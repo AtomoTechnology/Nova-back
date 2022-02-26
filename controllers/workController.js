@@ -9,32 +9,15 @@ const path = require('path');
 const os = require('os');
 const templatePdf = require('../helpers/TemplatePdf');
 
-// const OrdenWork = require('../models/OrdenWork');
-// const { cloudinary } = require('../helpers/cloudinary');
-// const fs = require('fs');
-// const fileUpload = require("express-fileupload");
-
 exports.createWork = catchAsync(async (req, res, next) => {
   const newWork = new Work(req.body);
   do {
     newWork.codigo = generateCodigoWork();
   } while (await Work.findOne({ codigo: newWork.codigo }).limit(1));
-  console.log(newWork);
   const state = await State.findById(newWork.estado);
-  console.log(state);
   newWork.states.push({ nombre: state.name });
 
-  // console.log(newWork);
   const work = await newWork.save();
-  // return;
-
-  // const w = await Work.findById({ _id: work._id }).populate('estado');
-
-  // const ws = new Work_State();
-  // ws.work = work._id;
-  // ws.state.push({ nombre: w.estado.name, fecha: moment() });
-  // await ws.save();
-
   res.status(201).json({
     status: 'success',
     data: {
@@ -46,13 +29,25 @@ exports.createWork = catchAsync(async (req, res, next) => {
 exports.getAllWorks = catchAsync(async (req, res, next) => {
   const sta = await State.findOne({ name: 'Entregado' });
   let query = Work.find({ estado: { $ne: sta._id } });
-  query = query.sort('-fechaInicio precio'); //
+  console.log(req.query);
+  query = query.find(req.query);
+  query = query.sort('-fechaInicio precio');
 
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 50;
-  const skip = (page - 1) * limit;
+  query = query
+    .populate({
+      path: 'cliente',
+      select: 'name',
+    })
+    .populate({
+      path: 'estado',
+      select: '-__v',
+    });
 
-  query = query.skip(skip).limit(limit);
+  // const page = req.query.page * 1 || 1;
+  // const limit = req.query.limit * 1 || 50;
+  // const skip = (page - 1) * limit;
+
+  // query = query.skip(skip).limit(limit);
   // const totalWork = await Work.countDocuments();
   // const numberPage = Math.ceil(totalWork / limit);
 
@@ -60,9 +55,9 @@ exports.getAllWorks = catchAsync(async (req, res, next) => {
 
   res.json({
     status: 'success',
-    page: works.length / limit,
+    // page: works.length / limit,
     results: works.length,
-    total: works.length,
+    // total: works.length,
     data: {
       works,
     },
@@ -71,7 +66,10 @@ exports.getAllWorks = catchAsync(async (req, res, next) => {
 
 exports.GetWorkByCode = catchAsync(async (req, res, next) => {
   console.log(req.body);
-  const work = await Work.findOne({ codigo: req.body.codigo });
+  const work = await Work.findOne({ codigo: req.body.codigo }).populate({
+    path: 'estado',
+    select: '-__v',
+  });
 
   if (!work) return next(new AppError('No se encontró trabajo con ese codigo..', 400));
 
@@ -83,7 +81,15 @@ exports.GetWorkByCode = catchAsync(async (req, res, next) => {
 
 exports.getOneWork = catchAsync(async (req, res, next) => {
   const workId = req.params.id;
-  const work = await Work.findById(workId);
+  const work = await Work.findById(workId)
+    .populate({
+      path: 'cliente',
+      // select: 'name',
+    })
+    .populate({
+      path: 'estado',
+      select: '-__v',
+    });
 
   if (!work) {
     return res.status(404).json({
@@ -94,6 +100,7 @@ exports.getOneWork = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     ok: true,
+    status: 'success',
     work,
   });
 });
@@ -101,7 +108,16 @@ exports.getOneWork = catchAsync(async (req, res, next) => {
 exports.getWorksClient = catchAsync(async (req, res, next) => {
   const idClient = req.params.idClient;
 
-  const works = await Work.find({ cliente: idClient }).sort('-fechaInicio');
+  const works = await Work.find({ cliente: idClient })
+    .populate({
+      path: 'cliente',
+      select: 'name',
+    })
+    .populate({
+      path: 'estado',
+      select: '-__v',
+    })
+    .sort('-fechaInicio');
 
   if (!works) return next(new AppError('No existe usuario con ese ID', 500));
   // if (works.length === 0) return next(new AppError('No se encontró trabajo para es usuario', 204));
@@ -121,6 +137,7 @@ exports.updateWork = catchAsync(async (req, res, next) => {
 
   if (!work) return next(new AppError('No se encontró trabajo con ese id', 404));
   const newWork = { ...req.body };
+  console.log(newWork);
   const stateToModify = await State.findById(newWork.estado);
 
   if (stateToModify != null) {
@@ -130,8 +147,8 @@ exports.updateWork = catchAsync(async (req, res, next) => {
   }
 
   if (work.estado._id != newWork.estado) {
-    const state = await State.findById(newWork.estado);
-    work.states.push({ nombre: state.name });
+    // const state = await State.findById(newWork.estado);
+    work.states.push({ nombre: stateToModify.name });
     newWork.states = work.states;
   }
 
@@ -151,8 +168,11 @@ exports.updateWork = catchAsync(async (req, res, next) => {
 exports.UpdateState = catchAsync(async (req, res, next) => {
   const workId = req.params.id;
   const work = await Work.findById(workId);
+  console.log(work);
+  console.log(req.body);
+  return;
 
-  if (!work) return next(new AppError('No se encontró trabajo con ese id', 404));
+  if (!work) return next(new AppError('No se encontró trabajo con ese id', 400));
 
   if (req.body.stateName === 'Entregado') {
     work.fechaFin = moment.now();
@@ -182,18 +202,7 @@ exports.deleteWork = catchAsync(async (req, res, next) => {
   const workId = req.params.id;
   const work = await Work.findById(workId);
   if (!work) return next(new AppError('No se encontró trabajo con ese id', 404));
-
-  //found all the work_state before delete
-  // const workState = await Work_State.find({ work: workId });
-  // console.log(workState);
-  // if (workState.length > 0) {
-  //   console.log('no entraaaa');
-  //   await Work_State.deleteOne({ work: workId });
-  // }
-  // console.log('sigueeeeeee');
-
   await Work.findByIdAndDelete(workId);
-
   res.status(200).json({
     status: 'success',
     data: null,
@@ -271,14 +280,19 @@ exports.UpdateStatesToArray = catchAsync(async (req, res, next) => {
 });
 
 exports.getWorksByDataAndTurnedinState = catchAsync(async (req, res, next) => {
+  const { startDate, endDate } = req.body;
+  console.log(moment(startDate).toDate(), moment(endDate).add(1, 'days').toDate());
   const state = await State.findOne({ name: 'Entregado' });
-
   const works = await Work.find({
     estado: state._id,
-  }).sort('-fechaFin');
+    fechaFin: { $gte: moment(startDate).toDate(), $lte: moment(endDate).add(1, 'days').toDate() },
+  })
+    .sort('-fechaFin')
+    .select('fechaFin marca modelo codigo precio total');
 
   res.status(200).json({
     status: 'success',
+    results: works.length,
     data: {
       data: works,
     },
@@ -432,17 +446,4 @@ exports.getWorksByDataAndTurnedinState = catchAsync(async (req, res, next) => {
 //       pathImg: r,
 //     });
 //   } catch (error) {}
-// };
-
-// module.exports = {
-//   getAllWorks,
-//   createWork,
-//   deleteWork,
-//   updateWork,
-//   getOneWork,
-//   getWorksClient,
-//   deleteAll,
-//   // loadFile,
-//   // getWorksByDataAndTurnedinState,
-//   // uploadImagenWork,
 // };

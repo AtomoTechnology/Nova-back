@@ -1,8 +1,11 @@
+const AppError = require('../helpers/AppError');
 const catchAsync = require('../helpers/catchAsync');
 const Banner = require('../models/banner');
 
 exports.GetAll = catchAsync(async (req, res, next) => {
-  const banners = await Banner.findAll();
+  const banners = await Banner.findAll({
+    order: [['id', 'DESC']],
+  });
 
   res.json({
     status: 'success',
@@ -20,6 +23,15 @@ exports.Create = catchAsync(async (req, res, next) => {
   }
 
   res.json({
+    status: 'success',
+  });
+});
+exports.Delete = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
+  const banner = await Banner.destroy({ where: { id } });
+  if (banner === 0) return next(new AppError('No existe banner con ese id', 400));
+
+  res.status(200).json({
     status: 'success',
   });
 });

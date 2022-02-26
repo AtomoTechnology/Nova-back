@@ -14,4 +14,9 @@ const OutgoingsSchema = Schema({
   },
 });
 
+OutgoingsSchema.pre(/^find/, function (next) {
+  this.sort('-date');
+  next();
+});
+
 module.exports = model('Outgoing', OutgoingsSchema);

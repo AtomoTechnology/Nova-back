@@ -14,7 +14,7 @@ exports.create = catchAsync(async (req, res) => {
 
 exports.GetAll = catchAsync(async (req, res) => {
   const states = await State.find();
-  return res.status(201).json({
+  return res.status(200).json({
     status: 'success',
     results: states.length,
     data: {

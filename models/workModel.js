@@ -87,15 +87,15 @@ const WorkSchema = Schema({
   },
 });
 
-WorkSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: 'cliente',
-    // select: 'name',
-  }).populate({
-    path: 'estado',
-    select: '-__v',
-  });
+// WorkSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: 'cliente',
+//     // select: 'name',
+//   }).populate({
+//     path: 'estado',
+//     select: '-__v',
+//   });
 
-  next();
-});
+//   next();
+// });
 module.exports = model('Work', WorkSchema);

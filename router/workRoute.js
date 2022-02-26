@@ -26,7 +26,7 @@ router
 router.delete('/', workController.deleteAll);
 router.route('/generateOrder/:id').post(workController.GenerateOrder);
 router.route('/download/Order').get(workController.DownloadOrder);
-router.get('/historialWork/all', authController.restrictTo('admin'), workController.getWorksByDataAndTurnedinState);
+router.post('/historialWork/all', authController.restrictTo('admin'), workController.getWorksByDataAndTurnedinState);
 
 // router.post('/uploadFileWork', workController.uploadImagenWork);
 
