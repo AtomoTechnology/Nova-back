@@ -13,11 +13,26 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 exports.getAllUsers = async (req, res) => {
-  const users = await User.find().sort({ createAt: -1, name: 1 });
+  console.log(req.query.page, req.query.limit);
+  let query = User.find();
+  query = query.sort({ createAt: -1, name: 1 });
+
+  const page = req.query.page * 1 || 1;
+  const limit = req.query.limit * 1 || 50;
+  const skip = (page - 1) * limit;
+
+  query = query.skip(skip).limit(limit);
+  const total = await User.countDocuments();
+  const totalPage = Math.ceil(total / limit);
+
+  const users = await query;
 
   res.status(200).json({
     status: 'success',
-    result: users.length,
+    page,
+    totalPage,
+    total,
+    results: users.length,
     data: {
       users,
     },
@@ -42,22 +57,11 @@ exports.getUser = catchAsync(async (req, res, next) => {
 exports.updateUser = catchAsync(async (req, res, next) => {
   //create error for updating the passoword
   if (req.body.password || req.body.passwordConfirm) {
-    return next(
-      new AppError('This route is not for password update. Please use /updateMyPassword', 400)
-    );
+    return next(new AppError('This route is not for password update. Please use /updateMyPassword', 400));
   }
 
   //update
-  const filterBody = filterObj(
-    req.body,
-    'name',
-    'email',
-    'dni',
-    'phone1',
-    'phone2',
-    'nota',
-    'direction'
-  );
+  const filterBody = filterObj(req.body, 'name', 'email', 'dni', 'phone1', 'phone2', 'nota', 'direction');
   const updatedUser = await User.findByIdAndUpdate(req.params.id, filterBody, {
     new: true,
     runValidators: true,
@@ -85,22 +89,11 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 exports.updateMe = catchAsync(async (req, res, next) => {
   //create error for updating the passoword
   if (req.body.password || req.body.passwordConfirm) {
-    return next(
-      new AppError('Esta routa no es para cambiar contraseña. Por favor usa /updateMyPassword', 400)
-    );
+    return next(new AppError('Esta routa no es para cambiar contraseña. Por favor usa /updateMyPassword', 400));
   }
 
   //update
-  const filterBody = filterObj(
-    req.body,
-    'name',
-    'email',
-    'dni',
-    'phone1',
-    'phone2',
-    'nota',
-    'direction'
-  );
+  const filterBody = filterObj(req.body, 'name', 'email', 'dni', 'phone1', 'phone2', 'nota', 'direction');
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filterBody, {
     new: true,
     runValidators: true,
