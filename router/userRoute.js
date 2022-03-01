@@ -16,17 +16,11 @@ usersRouter.post('/renewToken', authController.renewToken);
 usersRouter.patch('/updateMyPassword', authController.updatePassword);
 usersRouter.patch('/updateMe', userController.updateMe);
 
-usersRouter.get(
-  '/me',
-  authController.restrictTo('user'),
-  userController.GetMe,
-  userController.getUser
-);
+usersRouter.get('/me', authController.restrictTo('user'), userController.GetMe, userController.getUser);
 usersRouter.delete('/deleteMe', authController.restrictTo('user'), userController.deleteMe);
+usersRouter.post('/updateAvatar/:id', userController.UpdateAvatar);
 
-usersRouter
-  .route('/')
-  .get(authController.restrictTo('admin', 'tecnico'), userController.getAllUsers);
+usersRouter.route('/').get(authController.restrictTo('admin', 'tecnico'), userController.getAllUsers);
 usersRouter
   .route('/:id')
   .get(userController.getUser)

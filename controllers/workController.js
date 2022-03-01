@@ -29,8 +29,9 @@ exports.createWork = catchAsync(async (req, res, next) => {
 exports.getAllWorks = catchAsync(async (req, res, next) => {
   const sta = await State.findOne({ name: 'Entregado' });
   let query = Work.find({ estado: { $ne: sta._id } });
+  let queryTotal = Work.find({ estado: { $ne: sta._id } });
   console.log(req.query);
-  query = query.find(req.query);
+  // query = query.find(req.query);
   query = query.sort('-fechaInicio precio');
 
   query = query
@@ -43,12 +44,11 @@ exports.getAllWorks = catchAsync(async (req, res, next) => {
       select: '-__v',
     });
 
-  // const page = req.query.page * 1 || 1;
-  // const limit = req.query.limit * 1 || 50;
-  // const skip = (page - 1) * limit;
-
-  // query = query.skip(skip).limit(limit);
-  // const totalWork = await Work.countDocuments();
+  const page = req.query.page * 1 || 1;
+  const limit = req.query.limit * 1 || 30;
+  const skip = (page - 1) * limit;
+  const total = await queryTotal.countDocuments();
+  query = query.skip(skip).limit(limit);
   // const numberPage = Math.ceil(totalWork / limit);
 
   const works = await query;
@@ -57,7 +57,7 @@ exports.getAllWorks = catchAsync(async (req, res, next) => {
     status: 'success',
     // page: works.length / limit,
     results: works.length,
-    // total: works.length,
+    total,
     data: {
       works,
     },

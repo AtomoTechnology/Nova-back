@@ -57,7 +57,7 @@ exports.getUser = catchAsync(async (req, res, next) => {
 exports.updateUser = catchAsync(async (req, res, next) => {
   //create error for updating the passoword
   if (req.body.password || req.body.passwordConfirm) {
-    return next(new AppError('This route is not for password update. Please use /updateMyPassword', 400));
+    return next(new AppError('Este no es la ruta para actualizar la contrasena', 400));
   }
 
   //update
@@ -72,6 +72,28 @@ exports.updateUser = catchAsync(async (req, res, next) => {
     data: {
       user: updatedUser,
     },
+  });
+});
+
+exports.UpdateAvatar = catchAsync(async (req, res, next) => {
+  //create error for updating the passoword
+  const { photo } = req.body;
+  if (!photo) return next(new AppError('Para actualizar la imagen hace falta el campo photo', 400));
+
+  if (!req.params.id) return next(new AppError('Necesitas el id del usuario', 400));
+
+  await User.findByIdAndUpdate(
+    req.params.id,
+    { photo },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Imagen actualizado con exito',
   });
 });
 
