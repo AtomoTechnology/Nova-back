@@ -28,6 +28,7 @@ exports.createWork = catchAsync(async (req, res, next) => {
 
 exports.getAllWorks = catchAsync(async (req, res, next) => {
   const sta = await State.findOne({ name: 'Entregado' });
+  // .select('codigo precio  total')
   let query = Work.find({ estado: { $ne: sta._id } });
   let queryTotal = Work.find({ estado: { $ne: sta._id } });
   console.log(req.query);
@@ -249,11 +250,13 @@ exports.ConfirmWork = catchAsync(async (req, res, next) => {
     },
   });
 });
+
 exports.WorkStats = catchAsync(async (req, res, next) => {
-  let stats = await Work.aggregate([
+  console.log('hello');
+  const stats = await Work.aggregate([
     {
       $group: {
-        _id: 'null',
+        _id: '',
         quantity: { $sum: 1 },
         averageEarn: { $avg: '$total' },
         minPrice: { $min: '$total' },

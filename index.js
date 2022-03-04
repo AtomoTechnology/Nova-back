@@ -18,6 +18,9 @@ const HandleGlobalError = require('./controllers/errorController');
 app.use(cors());
 app.use(express.static(path.join(__dirname, '/public/build')));
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, '/views'));
+
 app.use(bodyParser.json({ limit: '220mb' }));
 app.use(bodyParser.urlencoded({ limit: '220mb', extended: true }));
 //create the public folder
@@ -40,6 +43,8 @@ app.use(mongoSanitize());
 //   console.log("file" + req.file);
 //   res.send("Successfully uploaded!");
 // });
+
+console.log(process.env.NODE_ENV);
 
 // console.log('uiui');
 // module.exports = { upload };

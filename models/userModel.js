@@ -20,8 +20,8 @@ const userSchema = new mongoose.Schema({
   },
   phone1: {
     type: String,
+    unique: [true, 'El numero de telefono debe ser unico.'],
     required: [true, 'Es obligatorio ingresar un numero de telefono'],
-    unique: true,
   },
   phone2: {
     type: String,

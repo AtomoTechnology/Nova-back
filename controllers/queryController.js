@@ -5,14 +5,17 @@ const factory = require('./factoryController');
 
 // exports.GetAll = factory.GetAll(Query);
 exports.GetAll = catchAsync(async (req, res, next) => {
-  console.log(req.user);
   let query = {};
   if (req.user.role === 'user') {
-    query = { user: req.user._id };
+    // query = { user: req.user._id };
+    req.query.user = req.user._id;
   }
-  const docs = await Query.find(query);
+
+  console.log(req.query);
+  const docs = await Query.find(req.query);
   res.status(200).json({
     status: 'success',
+    results: docs.length,
     data: {
       data: docs,
     },

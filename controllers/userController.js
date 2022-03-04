@@ -13,8 +13,18 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 exports.getAllUsers = async (req, res) => {
-  console.log(req.query.page, req.query.limit);
-  let query = User.find();
+  let filter = {};
+  console.log(req.query);
+  if (req.query.search)
+    filter = {
+      $or: [
+        { name: { $regex: '.*' + req.query.search + '.*', $options: 'i' } },
+        { dni: { $regex: '.*' + req.query.search + '.*', $options: 'i' } },
+      ],
+    };
+  let query = User.find(filter);
+  let queryTotal = User.find(filter);
+
   query = query.sort({ createAt: -1, name: 1 });
 
   const page = req.query.page * 1 || 1;
@@ -22,7 +32,8 @@ exports.getAllUsers = async (req, res) => {
   const skip = (page - 1) * limit;
 
   query = query.skip(skip).limit(limit);
-  const total = await User.countDocuments();
+  const total = await queryTotal.countDocuments();
+  console.log(total);
   const totalPage = Math.ceil(total / limit);
 
   const users = await query;
@@ -31,7 +42,30 @@ exports.getAllUsers = async (req, res) => {
     status: 'success',
     page,
     totalPage,
-    total,
+    total: total,
+    results: users.length,
+    data: {
+      users,
+    },
+  });
+};
+
+exports.SearchUser = async (req, res) => {
+  let filter = {};
+
+  if (!req.params.filter) return next(new AppError('Hace falta un filtro para buscar el usuario', 400));
+  console.log(req.params.filter);
+
+  filter = {
+    $or: [
+      { name: { $regex: '.*' + req.params.filter + '.*', $options: 'i' } },
+      { dni: { $regex: '.*' + req.params.filter + '.*', $options: 'i' } },
+    ],
+  };
+  let users = await User.find(filter);
+
+  res.status(200).json({
+    status: 'success',
     results: users.length,
     data: {
       users,
@@ -42,6 +76,13 @@ exports.getAllUsers = async (req, res) => {
 exports.GetMe = catchAsync(async (req, res, next) => {
   if (!req.params.id) req.params.id = req.user._id;
   next();
+});
+exports.GetTotalUsers = catchAsync(async (req, res, next) => {
+  const total = await User.countDocuments();
+  res.status(200).json({
+    status: 'success',
+    total,
+  });
 });
 exports.getUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id);

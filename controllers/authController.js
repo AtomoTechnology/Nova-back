@@ -5,6 +5,7 @@ const User = require('./../models/userModel');
 const jwt = require('jsonwebtoken');
 const AppError = require('../helpers/AppError');
 const sendEmail = require('../helpers/email');
+const Email = require('../helpers/sendEmail');
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.SECRET_TOKEN_NOVA, {
@@ -14,6 +15,7 @@ const createToken = (id) => {
 
 const createSendToken = (user, statusCode, res) => {
   const token = createToken(user._id);
+  console.log(token);
 
   user.password = undefined;
 
@@ -43,6 +45,12 @@ exports.signUp = catchAsync(async (req, res, next) => {
   //   password: req.body.password,
   //   passwordConfirm: req.body.passwordConfirm,
   // });
+
+  //send email ${req.get('host')}
+
+  const url = `${req.protocol}://novatechnologyargentina.com/clients/${newUser._id}`;
+  console.log(url, process.env.NODE_ENV);
+  await new Email(newUser, url).sendWelcome();
 
   //create token
   createSendToken(newUser, 201, res);
@@ -83,17 +91,20 @@ exports.delete = catchAsync(async (req, res, next) => {
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
   //getting token
+
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
 
   //validate token
   if (!token) {
-    return next(new AppError('No estás loggeado . Por favor Inicia session. ', 401));
+    return next(new AppError('No estás loggeado . Por favor Inicia session. ', 400));
   }
+  console.log('hay token', token);
 
   //vaerify token
   const decoded = await promisify(jwt.verify)(token, process.env.SECRET_TOKEN_NOVA);
+  console.log(decoded);
 
   //check if user exist
   const currentUser = await User.findById(decoded.id);

@@ -8,8 +8,8 @@ router.use(authController.protect);
 
 // router.use(authController.restrictTo('admin', 'tecnico'));
 router.get('/client/:idClient', workController.getWorksClient);
-router.get('/done/', workController.ConfirmWork);
-router.get('/stats/', workController.WorkStats);
+router.get('/done', workController.ConfirmWork);
+router.get('/stats', workController.WorkStats);
 router.get('/updateFormerStates', workController.UpdateStatesToArray);
 
 router
