@@ -8,13 +8,10 @@ module.exports = class Email {
     this.firstName = user.name.split(' ')[0];
     this.url = url;
     this.from = `Nova Technology <${process.env.EMAIL_FROM}>`;
-    // console.log(process.env.NODE_ENV);
   }
 
   newTransport() {
-    console.log(process.env.NODE_ENV === 'production');
     if (process.env.NODE_ENV === 'production') {
-      console.log('sendgrid');
       // Sendgrid
       return nodemailer.createTransport({
         service: 'SendGrid',
@@ -24,7 +21,6 @@ module.exports = class Email {
         },
       });
     } else {
-      console.log('mailtrap');
       return nodemailer.createTransport({
         // host: process.env.EMAIL_HOST,
         // port: process.env.EMAIL_PORT,

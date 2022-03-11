@@ -14,7 +14,6 @@ const filterObj = (obj, ...allowedFields) => {
 
 exports.getAllUsers = async (req, res) => {
   let filter = {};
-  console.log(req.query);
   if (req.query.search)
     filter = {
       $or: [
@@ -27,14 +26,21 @@ exports.getAllUsers = async (req, res) => {
 
   query = query.sort({ createAt: -1, name: 1 });
 
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 50;
-  const skip = (page - 1) * limit;
+  // const page = req.query.page * 1 || 1;
+  // const limit = req.query.limit * 1 || 50;
+  // const skip = (page - 1) * limit;
+  // query = query.skip(skip).limit(limit);
+  let totalPage = 1;
+  let page = 1;
 
-  query = query.skip(skip).limit(limit);
   const total = await queryTotal.countDocuments();
-  console.log(total);
-  const totalPage = Math.ceil(total / limit);
+  if (req.query.limit && req.query.page) {
+    page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 30;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    totalPage = Math.ceil(total / limit);
+  }
 
   const users = await query;
 
@@ -54,7 +60,6 @@ exports.SearchUser = async (req, res) => {
   let filter = {};
 
   if (!req.params.filter) return next(new AppError('Hace falta un filtro para buscar el usuario', 400));
-  console.log(req.params.filter);
 
   filter = {
     $or: [
@@ -186,7 +191,6 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 //     users[i].password = '12345678';
 //     users[i].passwordConfirm = '12345678';
 //     users[i].save({ validateBeforeSave: false });
-//     console.log('save..', i);
 //   }
 //   // { createAt: { $gte: new Date('2022-01-10') },
 //   // email: { $ne: null },}

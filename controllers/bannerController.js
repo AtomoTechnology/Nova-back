@@ -18,7 +18,6 @@ exports.GetAll = catchAsync(async (req, res, next) => {
 
 exports.Create = catchAsync(async (req, res, next) => {
   for (let i = 0; i < req.body.photos.length; i++) {
-    console.log(req.body.photos[i]);
     await Banner.create(req.body.photos[i]);
   }
 

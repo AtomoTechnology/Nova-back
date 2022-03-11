@@ -116,7 +116,6 @@ userSchema.methods.createPasswordResetToken = function () {
 
   //store the time plus 10 mns to the satabase
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-  console.log({ resetToken }, this.passwordResetToken);
   //return the token without encrypt
   return resetToken;
 };

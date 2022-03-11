@@ -24,7 +24,7 @@ router
   .delete(authController.restrictTo('admin', 'tecnico'), workController.deleteWork);
 
 router.delete('/', workController.deleteAll);
-router.route('/generateOrder/:id').post(workController.GenerateOrder);
+// router.route('/generateOrder/:id').post(workController.GenerateOrder);
 router.route('/download/Order').get(workController.DownloadOrder);
 router.post('/historialWork/all', authController.restrictTo('admin'), workController.getWorksByDataAndTurnedinState);
 

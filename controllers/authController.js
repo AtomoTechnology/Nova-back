@@ -15,7 +15,6 @@ const createToken = (id) => {
 
 const createSendToken = (user, statusCode, res) => {
   const token = createToken(user._id);
-  console.log(token);
 
   user.password = undefined;
 
@@ -35,7 +34,6 @@ exports.renewToken = catchAsync(async (req, res, next) => {
 exports.signUp = catchAsync(async (req, res, next) => {
   //bad practice
   const exist = await User.findOne({ $or: [{ dni: req.body.dni }, { email: req.body.email }] });
-  console.log(exist);
 
   if (exist) return next(new AppError('Este usuario ya existe. Por favor Inicia Sesion con tu dni y contraseña.', 500));
   const newUser = await User.create(req.body);
@@ -49,7 +47,6 @@ exports.signUp = catchAsync(async (req, res, next) => {
   //send email ${req.get('host')}
 
   const url = `${req.protocol}://novatechnologyargentina.com/clients/${newUser._id}`;
-  console.log(url, process.env.NODE_ENV);
   await new Email(newUser, url).sendWelcome();
 
   //create token
@@ -70,7 +67,6 @@ exports.signIn = catchAsync(async (req, res, next) => {
   if (!user || !(await user.checkPassword(password, user.password))) {
     return next(new AppError('DNI y/o Contraseña incorrecta.', 401));
   }
-  // console.log(user);
   req.user = user;
 
   //create token
@@ -98,18 +94,16 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   //validate token
   if (!token) {
-    return next(new AppError('No estás loggeado . Por favor Inicia session. ', 400));
+    return next(new AppError('No estás loggeado . Por favor Inicia session. ', 401));
   }
-  console.log('hay token', token);
 
   //vaerify token
   const decoded = await promisify(jwt.verify)(token, process.env.SECRET_TOKEN_NOVA);
-  console.log(decoded);
 
   //check if user exist
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
-    return next(new AppError('Este usuario ya no existe ', 401));
+    return next(new AppError('Este usuario ya no existe ', 404));
   }
 
   //check if user change the password

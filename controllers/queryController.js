@@ -11,7 +11,6 @@ exports.GetAll = catchAsync(async (req, res, next) => {
     req.query.user = req.user._id;
   }
 
-  console.log(req.query);
   const docs = await Query.find(req.query);
   res.status(200).json({
     status: 'success',

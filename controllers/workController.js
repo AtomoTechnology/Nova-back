@@ -9,6 +9,16 @@ const path = require('path');
 const os = require('os');
 const templatePdf = require('../helpers/TemplatePdf');
 
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+
+  return newObj;
+};
+
 exports.createWork = catchAsync(async (req, res, next) => {
   const newWork = new Work(req.body);
   do {
@@ -27,12 +37,16 @@ exports.createWork = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllWorks = catchAsync(async (req, res, next) => {
-  const sta = await State.findOne({ name: 'Entregado' });
-  // .select('codigo precio  total')
-  let query = Work.find({ estado: { $ne: sta._id } });
-  let queryTotal = Work.find({ estado: { $ne: sta._id } });
-  console.log(req.query);
-  // query = query.find(req.query);
+  // if (!req.query.estado) {
+  //   const sta = await State.findOne({ name: 'Entregado' });
+  //   req.query.estado = { $ne: sta._id };
+  // }
+  const queryObj = { ...req.query };
+
+  const excludeFields = ['page', 'sort', 'limit', 'fields'];
+  excludeFields.forEach((el) => delete queryObj[el]);
+  let query = Work.find(queryObj);
+  // let queryTotal = Work.find({ estado: { $ne: sta._id } });
   query = query.sort('-fechaInicio precio');
 
   query = query
@@ -45,11 +59,14 @@ exports.getAllWorks = catchAsync(async (req, res, next) => {
       select: '-__v',
     });
 
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 30;
-  const skip = (page - 1) * limit;
-  const total = await queryTotal.countDocuments();
-  query = query.skip(skip).limit(limit);
+  if (req.query.limit && req.query.page) {
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 30;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+  }
+  // const total = await queryTotal.countDocuments();
+  const total = await Work.countDocuments();
   // const numberPage = Math.ceil(totalWork / limit);
 
   const works = await query;
@@ -66,8 +83,7 @@ exports.getAllWorks = catchAsync(async (req, res, next) => {
 });
 
 exports.GetWorkByCode = catchAsync(async (req, res, next) => {
-  console.log(req.body);
-  const work = await Work.findOne({ codigo: req.body.codigo }).populate({
+  const work = await Work.find({ codigo: { $regex: '.*' + req.body.codigo + '.*' } }).populate({
     path: 'estado',
     select: '-__v',
   });
@@ -138,7 +154,6 @@ exports.updateWork = catchAsync(async (req, res, next) => {
 
   if (!work) return next(new AppError('No se encontró trabajo con ese id', 404));
   const newWork = { ...req.body };
-  console.log(newWork);
   const stateToModify = await State.findById(newWork.estado);
 
   if (stateToModify != null) {
@@ -169,8 +184,6 @@ exports.updateWork = catchAsync(async (req, res, next) => {
 exports.UpdateState = catchAsync(async (req, res, next) => {
   const workId = req.params.id;
   const work = await Work.findById(workId);
-  console.log(work);
-  console.log(req.body);
   return;
 
   if (!work) return next(new AppError('No se encontró trabajo con ese id', 400));
@@ -219,20 +232,19 @@ exports.deleteAll = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.GenerateOrder = catchAsync(async (req, res, next) => {
-  const workId = req.params.id;
-  console.log('hello');
-  const work = await Work.findById(workId);
+// exports.GenerateOrder = catchAsync(async (req, res, next) => {
+//   const workId = req.params.id;
+//   const work = await Work.findById(workId);
 
-  if (!work) return next(new AppError('No se encontró trabajo con ese id', 404));
+//   if (!work) return next(new AppError('No se encontró trabajo con ese id', 404));
 
-  pdf.create(templatePdf(work), {}).toFile(`${path.join(os.homedir(), 'downloads')}/order.pdf`, function (err) {
-    if (err) {
-      res.send(Promise.reject());
-    }
-    res.send(Promise.resolve());
-  });
-});
+//   pdf.create(templatePdf(work), {}).toFile(`${path.join(os.homedir(), 'downloads')}/order.pdf`, function (err) {
+//     if (err) {
+//       res.send(Promise.reject());
+//     }
+//     res.send(Promise.resolve());
+//   });
+// });
 
 exports.DownloadOrder = catchAsync(async (req, res, next) => {
   res.sendFile(`${path.join(os.homedir(), 'downloads')}/order.pdf`);
@@ -252,7 +264,6 @@ exports.ConfirmWork = catchAsync(async (req, res, next) => {
 });
 
 exports.WorkStats = catchAsync(async (req, res, next) => {
-  console.log('hello');
   const stats = await Work.aggregate([
     {
       $group: {
@@ -284,7 +295,6 @@ exports.UpdateStatesToArray = catchAsync(async (req, res, next) => {
 
 exports.getWorksByDataAndTurnedinState = catchAsync(async (req, res, next) => {
   const { startDate, endDate } = req.body;
-  console.log(moment(startDate).toDate(), moment(endDate).add(1, 'days').toDate());
   const state = await State.findOne({ name: 'Entregado' });
   const works = await Work.find({
     estado: state._id,

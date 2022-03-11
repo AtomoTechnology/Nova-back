@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const sequelize = require('./database/config');
 require('dotenv').config();
-const Banner = require('./models/banner');
 
 const app = express();
 mongoose
