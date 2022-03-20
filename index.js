@@ -10,7 +10,7 @@ const path = require('path');
 const HandleGlobalError = require('./controllers/errorController');
 
 app.use(cors());
-// app.use(express.static(path.join(__dirname, '/public/build')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, '/views'));
